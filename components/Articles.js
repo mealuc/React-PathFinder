@@ -78,7 +78,7 @@ class Articles extends Component {
           <View style={styles.mapcontainer}>
             <MapView
               showsMyLocationButton={true}
-              provider={PROVIDER_GOOGLE}// remove if not using Google Maps
+              provider={PROVIDER_GOOGLE}///////// remove if not using Google Maps
               style={styles.map}
               region={{
                 latitude:  Number(41.2351403),
