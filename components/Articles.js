@@ -2,18 +2,20 @@ import React, { Component, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, PermissionsAndroid } from 'react-native';
 import * as firebase from 'firebase';
 import { SearchBar } from 'react-native-elements';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import Geolocation from '@react-native-community/geolocation';
 import MapView, { PROVIDER_GOOGLE, Marker, AnimatedRegion } from 'react-native-maps';
+import Dialog from "react-native-dialog";
 class Articles extends Component {
   constructor() {
     super();
     this.state = {
       email: "",
       name: "",
-      search: '',
+      search: "",
       latitude: '',
-      longitude: ''
+      longitude: '',
+      description: "",
+      visible:false
     }
   }
 
@@ -25,8 +27,6 @@ class Articles extends Component {
       'title': 'Deneme',
       'message': 'Konumu Ver!'
     });
-    //alert(response);
-    
     const useruid = firebase.auth().currentUser.uid;
     firebase.database().ref('users/' + useruid).once('value')
       .then(snapshot => {
@@ -44,22 +44,30 @@ class Articles extends Component {
       { enableHighAccuracy: true }
     );
   }
-find_myposition=()=>{
-  Geolocation.getCurrentPosition(
-    (position) => {      
-      let { coords: { latitude, longitude } } = position;
-      this.setState({ latitude, longitude });
-    },
-    (error) => {
-      console.log(error.code, error.message);
-    },
-    { enableHighAccuracy: true, timeout: 30000}
-  );
-}
-  
-
+  find_myposition = () => {
+    Geolocation.getCurrentPosition(
+      (position) => {
+        let { coords: { latitude, longitude } } = position;
+        this.setState({ latitude, longitude });
+      },
+      (error) => {
+        console.log(error.code, error.message);
+      },
+      { enableHighAccuracy: true, timeout: 30000 }
+    );
+  }
+  handleCancel = () => {
+    this.setState({
+      visible:false
+    })
+  };
+  showDialog=()=>{
+    this.setState({
+      visible:true
+    })
+  }
   save_coords = () => {
-    var database = firebase.database().ref('coords/');
+    /*var database = firebase.database().ref('coords/');
     database.push({
       latitude: this.state.latitude,
       longitude: this.state.longitude,
@@ -67,6 +75,7 @@ find_myposition=()=>{
       owner_name:this.state.name,
     }).then((result) => console.log(result))
       .catch((error) => console.log(error));
+      */
   }
 
   stop_observing = () => {
@@ -82,6 +91,12 @@ find_myposition=()=>{
           onChangeText={this.updateSearch}
           value={search}
         />
+        <Dialog.Container visible={this.state.visible}>
+          <Dialog.Title>Konumuna Açıklama Ekle</Dialog.Title>
+          <Dialog.Input onChangeText={description=>this.setState({description})}></Dialog.Input>
+          <Dialog.Button label="Cancel" onPress={this.handleCancel}/>
+          <Dialog.Button label="Ekle" onPress={alert(this.state.description)}/>
+        </Dialog.Container>
         <Text>
           latitude:{latitude}
         </Text>
@@ -120,7 +135,7 @@ find_myposition=()=>{
           <Text style={styles.content}>
             Hi {email}/{name}
           </Text>
-          <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={this.save_coords}>
+          <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={this.showDialog}>
             <Text style={{ color: '#1B9CFC' }}>Konumu Kaydet</Text>
           </TouchableOpacity>
           <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={this.find_myposition}>
@@ -129,7 +144,7 @@ find_myposition=()=>{
           <TouchableOpacity style={{ padding: 20, width: 85 }} onPress={() => firebase.auth().signOut()} >
             <Text style={{ color: '#1B9CFC' }}>
               Logout
-        </Text>
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity style={{ padding: 20, width: 85 }} onPress={this.stop_observing}>
             <Text style={{ color: '#1B9CFC' }}>Durdur</Text>
