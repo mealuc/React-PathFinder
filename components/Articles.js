@@ -15,7 +15,8 @@ class Articles extends Component {
       latitude: '',
       longitude: '',
       description: "",
-      visible:false
+      title: "",
+      visible: false
     }
   }
 
@@ -49,6 +50,7 @@ class Articles extends Component {
       (position) => {
         let { coords: { latitude, longitude } } = position;
         this.setState({ latitude, longitude });
+        console.log(position)
       },
       (error) => {
         console.log(error.code, error.message);
@@ -58,24 +60,31 @@ class Articles extends Component {
   }
   handleCancel = () => {
     this.setState({
-      visible:false
+      visible: false
     })
   };
-  showDialog=()=>{
+  showDialog = () => {
     this.setState({
-      visible:true
+      visible: true
+    })
+  }
+  closeDialog = () => {
+    this.setState({
+      visible: false
     })
   }
   save_coords = () => {
-    /*var database = firebase.database().ref('coords/');
+    var database = firebase.database().ref('coords/');
     database.push({
       latitude: this.state.latitude,
       longitude: this.state.longitude,
-      owner_email:this.state.email,
-      owner_name:this.state.name,
-    }).then((result) => console.log(result))
+      owner_email: this.state.email,
+      owner_name: this.state.name,
+      description: this.state.description,
+      title: this.state.title,
+      userid: firebase.auth().currentUser.uid
+    }).then(this.closeDialog)
       .catch((error) => console.log(error));
-      */
   }
 
   stop_observing = () => {
@@ -93,9 +102,10 @@ class Articles extends Component {
         />
         <Dialog.Container visible={this.state.visible}>
           <Dialog.Title>Konumuna Açıklama Ekle</Dialog.Title>
-          <Dialog.Input onChangeText={description=>this.setState({description})}></Dialog.Input>
-          <Dialog.Button label="Cancel" onPress={this.handleCancel}/>
-          <Dialog.Button label="Ekle" onPress={alert(this.state.description)}/>
+          <Dialog.Input  placeholder="Başlık" onChangeText={title => this.setState({ title })}></Dialog.Input>
+          <Dialog.Input  placeholder="Açıklama" onChangeText={description => this.setState({ description })}></Dialog.Input>
+          <Dialog.Button label="Cancel" onPress={this.handleCancel} />
+          <Dialog.Button label="Ekle" onPress={this.save_coords} />
         </Dialog.Container>
         <Text>
           latitude:{latitude}
@@ -110,8 +120,8 @@ class Articles extends Component {
               provider={PROVIDER_GOOGLE}///////// remove if not using Google Maps
               style={styles.map}
               region={{
-                latitude: Number(41.2351403),
-                longitude: Number(32.6669429),
+                latitude: Number(this.state.latitude),
+                longitude: Number(this.state.longitude),
                 latitudeDelta: 0.015,
                 longitudeDelta: 0.0121,
               }}
@@ -125,8 +135,8 @@ class Articles extends Component {
                 title={"Here"}
                 description={"MyHome"}
                 coordinate={{
-                  latitude: 41.2351403,
-                  longitude: 32.6669429,
+                  latitude: Number(this.state.latitude),
+                  longitude: Number(this.state.longitude),
                   latitudeDelta: 0.015,
                   longitudeDelta: 0.0121,
                 }} />
@@ -190,3 +200,5 @@ const styles = StyleSheet.create({
 
 export default Articles;
 
+//Number(41.2351403),
+//Number(32.6669429),
