@@ -5,6 +5,8 @@ import { SearchBar } from 'react-native-elements';
 import Geolocation from '@react-native-community/geolocation';
 import MapView, { PROVIDER_GOOGLE, Marker, AnimatedRegion } from 'react-native-maps';
 import Dialog from "react-native-dialog";
+import Add_Location from './AddLocation';
+import GetItem from './GetItem';
 class Articles extends Component {
   constructor() {
     super();
@@ -16,13 +18,14 @@ class Articles extends Component {
       longitude: '',
       description: "",
       title: "",
-      visible: false
+      visible: false,
+      items:[]
     }
   }
 
-  updateSearch = (search) => {
-    this.setState({ search });
-  }
+
+
+
   componentDidMount = async () => {
     const response = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION, {
       'title': 'Deneme',
@@ -45,17 +48,25 @@ class Articles extends Component {
       { enableHighAccuracy: true }
     );
   }
+  getItems=()=>{
+    firebase.database().ref('/items')
+    .on('value', snapshot => {
+    console.log(snapshot.val());
+  });
+  }
+  updateSearch = (search) => {
+    this.setState({ search });
+  }
   find_myposition = () => {
     Geolocation.getCurrentPosition(
       (position) => {
         let { coords: { latitude, longitude } } = position;
         this.setState({ latitude, longitude });
-        console.log(position)
       },
       (error) => {
         console.log(error.code, error.message);
       },
-      { enableHighAccuracy: true, timeout: 30000 }
+      { enableHighAccuracy: true}
     );
   }
   handleCancel = () => {
@@ -65,28 +76,29 @@ class Articles extends Component {
   };
   showDialog = () => {
     this.setState({
-      visible: true
+        visible: true
     })
-  }
+}
   closeDialog = () => {
     this.setState({
       visible: false
-    })
+    },()=>{
+      alert('Konumu Eklendi!');
+    });
   }
   save_coords = () => {
-    var database = firebase.database().ref('coords/');
+    var database = firebase.database().ref('coordinates/');
     database.push({
-      latitude: this.state.latitude,
-      longitude: this.state.longitude,
+      title: this.state.title,
+      description: this.state.description,
       owner_email: this.state.email,
       owner_name: this.state.name,
-      description: this.state.description,
-      title: this.state.title,
+      latitude: this.state.latitude,
+      longitude: this.state.longitude,          
       userid: firebase.auth().currentUser.uid
     }).then(this.closeDialog)
       .catch((error) => console.log(error));
   }
-
   stop_observing = () => {
     Geolocation.stopObserving();
   };
@@ -99,6 +111,7 @@ class Articles extends Component {
           placeholder="Search something..."
           onChangeText={this.updateSearch}
           value={search}
+          onPress={this.getItems}
         />
         <Dialog.Container visible={this.state.visible}>
           <Dialog.Title>Konumuna Açıklama Ekle</Dialog.Title>
@@ -145,7 +158,10 @@ class Articles extends Component {
           <Text style={styles.content}>
             Hi {email}/{name}
           </Text>
-          <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={this.showDialog}>
+          <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={this.props.setPage}>
+            <Text style={{ color: '#1B9CFC' }}>GetItem</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={GetItem.getData}>
             <Text style={{ color: '#1B9CFC' }}>Konumu Kaydet</Text>
           </TouchableOpacity>
           <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={this.find_myposition}>

@@ -5,6 +5,7 @@ import Articles from './Articles';
 import firebase from 'firebase';
 import Loading from './Loading';
 import Register from './Register';
+import GetItem from './GetItem';
 class App extends Component {
 
   constructor(props){
@@ -61,6 +62,10 @@ class App extends Component {
       case "register":{
 
         return <Register setPage={this.setPage}/>
+      }
+      
+      case "getitem":{
+        return <GetItem setPage={this.setPage}/>
       }
       default:
         return <Loading />

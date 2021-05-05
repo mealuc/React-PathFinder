@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { Platform } from 'react-native';
 import { View, Text, StyleSheet, TouchableOpacity, PermissionsAndroid, FlatList } from 'react-native';
-import Articles from '../components/Articles';
 import Dialog from "react-native-dialog";
+import Geolocation from '@react-native-community/geolocation';
 
-export default class AddLocation extends Component {
+class AddLocation extends Component {
     constructor() {
         super();
         this.state = {
@@ -17,64 +16,72 @@ export default class AddLocation extends Component {
             visible: false
         }
     }
+
+
     find_myposition = () => {
         Geolocation.getCurrentPosition(
-          (position) => {
-            let { coords: { latitude, longitude } } = position;
-            this.setState({ latitude, longitude });
-            console.log(position)
-          },
-          (error) => {
-            console.log(error.code, error.message);
-          },
-          { enableHighAccuracy: true, timeout: 30000 }
+            (position) => {
+                let { coords: { latitude, longitude } } = position;
+                this.setState({ latitude, longitude });
+                console.log(position)
+            },
+            (error) => {
+                console.log(error.code, error.message);
+            },
+            { enableHighAccuracy: true, timeout: 30000 }
         );
-      }
-      handleCancel = () => {
+    }
+    handleCancel = () => {
         this.setState({
-          visible: false
+            visible: false
         })
-      };
-      showDialog = () => {
+    };
+    showDialog = () => {
         this.setState({
-          visible: true
+            visible: true
         })
-      }
-      closeDialog = () => {
+    }
+    closeDialog = () => {
         this.setState({
-          visible: false
+            visible: false
         })
-      }
-      save_coords = () => {
-        var database = firebase.database().ref('coords/');
+    }
+    save_coords = () => {
+        var database = firebase.database().ref('coordinates/');
         database.push({
-          latitude: this.state.latitude,
-          longitude: this.state.longitude,
-          owner_email: this.state.email,
-          owner_name: this.state.name,
-          description: this.state.description,
-          title: this.state.title,
-          userid: firebase.auth().currentUser.uid
+            owner_email: this.state.email,
+            owner_name: this.state.name,
+            title: this.state.title,
+            description: this.state.description,
+            latitude: this.state.latitude,
+            longitude: this.state.longitude,
+            userid: firebase.auth().currentUser.uid
         }).then(this.closeDialog)
-          .catch((error) => console.log(error));
-      }
-    
+            .catch((error) => console.log(error));
+    }
+
     render() {
         return (
-            <Modal ref={"myModal"} style={styles.container} position='center' backdrop={true}>
-                <Text>Text Yazısı</Text>
-            </Modal>
+            <View>
+                <Dialog.Container visible={this.state.visible}>
+                    <Dialog.Title>Konumuna Açıklama Ekle</Dialog.Title>
+                    <Dialog.Input placeholder="Başlık" onChangeText={title => this.setState({ title })}></Dialog.Input>
+                    <Dialog.Input placeholder="Açıklama" onChangeText={description => this.setState({ description })}></Dialog.Input>
+                    <Dialog.Button label="Cancel" onPress={this.handleCancel} />
+                    <Dialog.Button label="Ekle" onPress={this.save_coords} />
+                </Dialog.Container>
+            </View>
         );
     }
 }
 
 const styles = StyleSheet.create({
     container: {
-        justifyContent: 'center',
-        borderRadius: Platform.OS === 'ios' ? 30 : 0,
-        shadowRadius: 10,
-        width: screen.width - 80,
-        height: 280,
+
     }
 
 });
+
+const Add_Location=new AddLocation();
+
+export default Add_Location;
