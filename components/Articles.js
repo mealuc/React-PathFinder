@@ -19,7 +19,7 @@ class Articles extends Component {
       description: "",
       title: "",
       visible: false,
-      items:[]
+      items: []
     }
   }
 
@@ -48,11 +48,11 @@ class Articles extends Component {
       { enableHighAccuracy: true }
     );
   }
-  getItems=()=>{
+  getItems = () => {
     firebase.database().ref('/items')
-    .on('value', snapshot => {
-    console.log(snapshot.val());
-  });
+      .on('value', snapshot => {
+        console.log(snapshot.val());
+      });
   }
   updateSearch = (search) => {
     this.setState({ search });
@@ -66,7 +66,7 @@ class Articles extends Component {
       (error) => {
         console.log(error.code, error.message);
       },
-      { enableHighAccuracy: true}
+      { enableHighAccuracy: true }
     );
   }
   handleCancel = () => {
@@ -76,13 +76,13 @@ class Articles extends Component {
   };
   showDialog = () => {
     this.setState({
-        visible: true
+      visible: true
     })
-}
+  }
   closeDialog = () => {
     this.setState({
       visible: false
-    },()=>{
+    }, () => {
       alert('Konumu Eklendi!');
     });
   }
@@ -94,7 +94,7 @@ class Articles extends Component {
       owner_email: this.state.email,
       owner_name: this.state.name,
       latitude: this.state.latitude,
-      longitude: this.state.longitude,          
+      longitude: this.state.longitude,
       userid: firebase.auth().currentUser.uid
     }).then(this.closeDialog)
       .catch((error) => console.log(error));
@@ -115,8 +115,8 @@ class Articles extends Component {
         />
         <Dialog.Container visible={this.state.visible}>
           <Dialog.Title>Konumuna Açıklama Ekle</Dialog.Title>
-          <Dialog.Input  placeholder="Başlık" onChangeText={title => this.setState({ title })}></Dialog.Input>
-          <Dialog.Input  placeholder="Açıklama" onChangeText={description => this.setState({ description })}></Dialog.Input>
+          <Dialog.Input placeholder="Başlık" onChangeText={title => this.setState({ title })}></Dialog.Input>
+          <Dialog.Input placeholder="Açıklama" onChangeText={description => this.setState({ description })}></Dialog.Input>
           <Dialog.Button label="Cancel" onPress={this.handleCancel} />
           <Dialog.Button label="Ekle" onPress={this.save_coords} />
         </Dialog.Container>
@@ -158,10 +158,10 @@ class Articles extends Component {
           <Text style={styles.content}>
             Hi {email}/{name}
           </Text>
-          <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={this.props.setPage}>
+          <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={() => this.props.setPage("getitem")}>
             <Text style={{ color: '#1B9CFC' }}>GetItem</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={GetItem.getData}>
+          <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={this.showDialog}>
             <Text style={{ color: '#1B9CFC' }}>Konumu Kaydet</Text>
           </TouchableOpacity>
           <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={this.find_myposition}>
