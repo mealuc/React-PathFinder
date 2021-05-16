@@ -6,6 +6,8 @@ import firebase from 'firebase';
 import Loading from './Loading';
 import Register from './Register';
 import GetItem from './GetItem';
+import GotoSearch from './SearchItem';
+import GiveDirection from './GiveDirection';
 class App extends Component {
 
   constructor(props){
@@ -67,6 +69,15 @@ class App extends Component {
       case "getitem":{
         return <GetItem />
       }
+
+      case "gotosearch":{
+        return <GotoSearch setPage={this.setPage}/>
+      }
+
+      case "givedirection":{
+        return <GiveDirection/>
+      }
+
       default:
         return <Loading />
     }

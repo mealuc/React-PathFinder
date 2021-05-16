@@ -1,12 +1,9 @@
-import React, { Component, useState } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, PermissionsAndroid } from 'react-native';
 import * as firebase from 'firebase';
-import { SearchBar } from 'react-native-elements';
 import Geolocation from '@react-native-community/geolocation';
 import MapView, { PROVIDER_GOOGLE, Marker, AnimatedRegion } from 'react-native-maps';
 import Dialog from "react-native-dialog";
-import Add_Location from './AddLocation';
-import GetItem from './GetItem';
 class Articles extends Component {
   constructor() {
     super();
@@ -19,12 +16,8 @@ class Articles extends Component {
       description: "",
       title: "",
       visible: false,
-      items: []
     }
   }
-
-
-
 
   componentDidMount = async () => {
     const response = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION, {
@@ -48,14 +41,19 @@ class Articles extends Component {
       { enableHighAccuracy: true }
     );
   }
-  getItems = () => {
-    firebase.database().ref('/items')
-      .on('value', snapshot => {
-        console.log(snapshot.val());
-      });
+  componentWillUnmount = () =>{
+    stop_observing = () => {
+      Geolocation.stopObserving();
+    };
   }
-  updateSearch = (search) => {
-    this.setState({ search });
+  getItems = () => {
+    firebase.database().ref('/coordinates')
+      .orderByChild('description')
+      .once('value', snapshot => {
+        snapshot.forEach((child) => {
+          console.log(child.val());
+        })
+      });
   }
   find_myposition = () => {
     Geolocation.getCurrentPosition(
@@ -99,20 +97,12 @@ class Articles extends Component {
     }).then(this.closeDialog)
       .catch((error) => console.log(error));
   }
-  stop_observing = () => {
-    Geolocation.stopObserving();
-  };
+
 
   render() {
     const { search, latitude, longitude, email, name } = this.state;
     return (
       <View style={styles.container}>
-        <SearchBar style={styles.searchbar}
-          placeholder="Search something..."
-          onChangeText={this.updateSearch}
-          value={search}
-          onPress={this.getItems}
-        />
         <Dialog.Container visible={this.state.visible}>
           <Dialog.Title>Konumuna Açıklama Ekle</Dialog.Title>
           <Dialog.Input placeholder="Başlık" onChangeText={title => this.setState({ title })}></Dialog.Input>
@@ -158,8 +148,20 @@ class Articles extends Component {
           <Text style={styles.content}>
             Hi {email}/{name}
           </Text>
+          <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={this.getItems}>
+            <Text style={{ color: '#1B9CFC' }}>Snapshot</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={() => this.props.setPage("CollapsibleFlatList")}>
+            <Text style={{ color: '#1B9CFC' }}>FlatList</Text>
+          </TouchableOpacity>
           <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={() => this.props.setPage("getitem")}>
             <Text style={{ color: '#1B9CFC' }}>GetItem</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={() => this.props.setPage("gotosearch")}>
+            <Text style={{ color: '#1B9CFC' }}>GotoSearch</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={() => this.props.setPage("givedirection")}>
+            <Text style={{ color: '#1B9CFC' }}>YolTarifi</Text>
           </TouchableOpacity>
           <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={this.showDialog}>
             <Text style={{ color: '#1B9CFC' }}>Konumu Kaydet</Text>
@@ -171,9 +173,6 @@ class Articles extends Component {
             <Text style={{ color: '#1B9CFC' }}>
               Logout
             </Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={{ padding: 20, width: 85 }} onPress={this.stop_observing}>
-            <Text style={{ color: '#1B9CFC' }}>Durdur</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -194,13 +193,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 19
   },
-  searchbar: {
-    padding: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 10,
-    fontSize: 16,
-  },
   mapcontainer: {
     flex: 1,
     ...StyleSheet.absoluteFillObject,
@@ -218,3 +210,23 @@ export default Articles;
 
 //Number(41.2351403),
 //Number(32.6669429),
+/*<Marker
+draggable={true}
+onDragEnd={(e) =>
+  this.setState({ latitude: e.nativeEvent.coordinate.latitude, longitude: e.nativeEvent.coordinate.longitude })}
+title={"Here"}
+description={"MyHome"}
+coordinate={{
+  latitude: Number(this.state.latitude),
+  longitude: Number(this.state.longitude),
+  latitudeDelta: 0.015,
+  longitudeDelta: 0.0121,
+}} />
+///////////////////
+getItems = () => {
+    firebase.database().ref('/coordinates')
+      .once('value', snapshot => {
+        console.log(snapshot.val());
+      });
+  }
+*/

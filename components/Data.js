@@ -1,7 +1,7 @@
 export default[
     {
         bg:'#A8DDE9',
-        color:'3F5B98',
+        color:'#3F5B98',
         category:'Market',
         subCategories:['1','2','3','4'],
     },
@@ -11,5 +11,48 @@ export default[
         category:'Ecza',
         subCategories:['a','b','c','d'],
     },
+    {
+        bg:'green',
+        color:'orange',
+        category:'Şarküteri',
+        subCategories:['1','2','3','4'],
+    },
+    {
+        bg:'darkblue',
+        color:'pink',
+        category:'Nakliyat',
+        subCategories:['a','b','c','d'],
+    },
+    {
+        bg:'blue',
+        color:'green',
+        category:'Giyim',
+        subCategories:['1','2','3','4'],
+    },
+    {
+        bg:'red',
+        color:'yellow',
+        category:'Satıcı',
+        subCategories:['a','b','c','d'],
+    },
+    {
+        bg:'purple',
+        color:'yellow',
+        category:'Alıcı',
+        subCategories:['a','b','c','d'],
+    },
+    {
+        bg:'brown',
+        color:'yellow',
+        category:'Yiyecek',
+        subCategories:['a','b','c','d'],
+    },
+    {
+        bg:'gray',
+        color:'yellow',
+        category:'İçecek',
+        subCategories:['a','b','c','d'],
+    },
+    
 
 ]
