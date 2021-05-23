@@ -13,6 +13,8 @@ class App extends Component {
   constructor(props){
     super(props);
     this.setPage = this.setPage.bind(this);
+    this.setCurrentIndex = this.setCurrentIndex.bind(this);
+    this.state = { currentIndex: null, page: null } 
   }
   state={
     page:"login"
@@ -20,6 +22,11 @@ class App extends Component {
   setPage(newpage) {
     this.setState({page: newpage});
   }
+  
+  setCurrentIndex(id){
+    this.setState({currentIndex: id});
+  }
+
   componentDidMount() {
     var firebaseConfig = {
       apiKey: "AIzaSyB4yGXuHZdohxyUeUH5QbePe-EPFioDkRs",
@@ -71,11 +78,11 @@ class App extends Component {
       }
 
       case "gotosearch":{
-        return <GotoSearch setPage={this.setPage}/>
+        return <GotoSearch setPage={this.setPage} currentIndex={this.state.currentIndex} setCurrentIndex={this.setCurrentIndex} />
       }
 
       case "givedirection":{
-        return <GiveDirection/>
+        return <GiveDirection currentIndex={this.state.currentIndex} setCurrentIndex={this.setCurrentIndex} />
       }
 
       default:

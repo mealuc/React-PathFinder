@@ -20,10 +20,16 @@ class Articles extends Component {
   }
 
   componentDidMount = async () => {
-    const response = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION, {
-      'title': 'Deneme',
-      'message': 'Konumu Ver!'
-    });
+    if (Platform.OS == 'android') {
+      const response = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION, {
+        'title': 'MapLocation',
+        'message': 'Give Permission!'
+      });
+      console.log(response);  
+    }
+    else{
+      Geolocation.requestAuthorization();
+    }    
     const useruid = firebase.auth().currentUser.uid;
     firebase.database().ref('users/' + useruid).once('value')
       .then(snapshot => {
@@ -41,11 +47,9 @@ class Articles extends Component {
       { enableHighAccuracy: true }
     );
   }
-  componentWillUnmount = () =>{
-    stop_observing = () => {
-      Geolocation.stopObserving();
-    };
-  }
+  stop_observing = () => {
+    Geolocation.stopObserving();
+  };
   getItems = () => {
     firebase.database().ref('/coordinates')
       .orderByChild('description')
@@ -97,7 +101,6 @@ class Articles extends Component {
     }).then(this.closeDialog)
       .catch((error) => console.log(error));
   }
-
 
   render() {
     const { search, latitude, longitude, email, name } = this.state;

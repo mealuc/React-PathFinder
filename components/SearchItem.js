@@ -7,17 +7,16 @@ import { Transition, Transitioning } from 'react-native-reanimated';
 
 const transition = (
   <Transition.Together>
-    <Transition.In type="fade" durationMs={100} />
+    <Transition.In type="fade" durationMs={200} />
     <Transition.Change />
-    <Transition.Out type="fade" durationMs={100} />
+    <Transition.Out type="fade" durationMs={200} />
   </Transition.Together>
 )
 
-const App = (props) => {
+const SearchItem = ({setPage,setCurrentIndex,currentIndex}) => {
   const [filteredData, setfilteredData] = useState([]);
   const [search, setsearch] = useState('');
   const [items, setitems] = useState([]);
-  const [CurrentIndex, setCurrentIndex] = useState(null);
   const ref = React.useRef();
   useEffect(() => {
     getItems();
@@ -83,11 +82,11 @@ const App = (props) => {
               style={styles.cardContainer}
               onPress={() => {
                 ref.current.animateNextTransition();
-                setCurrentIndex(item.key === CurrentIndex ? null : item.key);
+                setCurrentIndex(item.key === currentIndex ? null : item.key);
               }}>
               <View style={styles.card}>
                 <Text style={styles.heading}>{item.title}</Text>
-                {item.key === CurrentIndex && (
+                {item.key === currentIndex && (
                   <View style={styles.subCategoriesList}>
                     <Text>Store Owner: {item.owner_name}</Text>
                     <Text>Store Owner Email: {item.owner_email}</Text>
@@ -96,7 +95,9 @@ const App = (props) => {
                     <Text>Store Description: {item.description}</Text>
                     <View>
                       <TouchableOpacity
-                      onPress={() => props.setPage("givedirection")}
+                      onPress={() => {
+                        setPage("givedirection")
+                      }}
                       style={styles.directionButton}>
                       <Text>Git</Text>
                     </TouchableOpacity>
@@ -157,4 +158,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default App;
+export default SearchItem;
