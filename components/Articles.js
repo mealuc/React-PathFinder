@@ -5,14 +5,11 @@ import Geolocation from '@react-native-community/geolocation';
 import MapView, { PROVIDER_GOOGLE, Marker, AnimatedRegion } from 'react-native-maps';
 import Dialog from "react-native-dialog";
 class Articles extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       email: "",
       name: "",
-      search: "",
-      latitude: '',
-      longitude: '',
       description: "",
       title: "",
       visible: false,
@@ -25,7 +22,6 @@ class Articles extends Component {
         'title': 'MapLocation',
         'message': 'Give Permission!'
       });
-      console.log(response);  
     }
     else{
       Geolocation.requestAuthorization();
@@ -63,7 +59,7 @@ class Articles extends Component {
     Geolocation.getCurrentPosition(
       (position) => {
         let { coords: { latitude, longitude } } = position;
-        this.setState({ latitude, longitude });
+        this.props.setLastItem({ latitude, longitude });
       },
       (error) => {
         console.log(error.code, error.message);
@@ -71,6 +67,7 @@ class Articles extends Component {
       { enableHighAccuracy: true }
     );
   }
+  
   handleCancel = () => {
     this.setState({
       visible: false
@@ -103,9 +100,11 @@ class Articles extends Component {
   }
 
   render() {
-    const { search, latitude, longitude, email, name } = this.state;
+    const { email, name } = this.state;
+    const {latitude,longitude} = this.props.LastItem;
     return (
       <View style={styles.container}>
+
         <Dialog.Container visible={this.state.visible}>
           <Dialog.Title>Konumuna Açıklama Ekle</Dialog.Title>
           <Dialog.Input placeholder="Başlık" onChangeText={title => this.setState({ title })}></Dialog.Input>
@@ -126,8 +125,8 @@ class Articles extends Component {
               provider={PROVIDER_GOOGLE}///////// remove if not using Google Maps
               style={styles.map}
               region={{
-                latitude: Number(this.state.latitude),
-                longitude: Number(this.state.longitude),
+                latitude: latitude,
+                longitude: longitude,
                 latitudeDelta: 0.015,
                 longitudeDelta: 0.0121,
               }}
@@ -141,8 +140,8 @@ class Articles extends Component {
                 title={"Here"}
                 description={"MyHome"}
                 coordinate={{
-                  latitude: Number(this.state.latitude),
-                  longitude: Number(this.state.longitude),
+                  latitude: latitude,
+                  longitude: longitude,
                   latitudeDelta: 0.015,
                   longitudeDelta: 0.0121,
                 }} />
@@ -153,9 +152,6 @@ class Articles extends Component {
           </Text>
           <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={this.getItems}>
             <Text style={{ color: '#1B9CFC' }}>Snapshot</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={() => this.props.setPage("CollapsibleFlatList")}>
-            <Text style={{ color: '#1B9CFC' }}>FlatList</Text>
           </TouchableOpacity>
           <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={() => this.props.setPage("getitem")}>
             <Text style={{ color: '#1B9CFC' }}>GetItem</Text>

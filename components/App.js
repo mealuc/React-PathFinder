@@ -14,19 +14,22 @@ class App extends Component {
     super(props);
     this.setPage = this.setPage.bind(this);
     this.setCurrentIndex = this.setCurrentIndex.bind(this);
-    this.state = { currentIndex: null, page: null } 
+    this.setLastItem = this.setLastItem.bind(this);
+    this.state = { currentIndex: null, page: null, LastItem: {latitude : 0 , longitude : 0} }; 
   }
+  
   state={
     page:"login"
   }
   setPage(newpage) {
     this.setState({page: newpage});
   }
-  
   setCurrentIndex(id){
     this.setState({currentIndex: id});
   }
-
+  setLastItem(Item){
+    this.setState({LastItem:Item})
+  }
   componentDidMount() {
     var firebaseConfig = {
       apiKey: "AIzaSyB4yGXuHZdohxyUeUH5QbePe-EPFioDkRs",
@@ -65,7 +68,11 @@ class App extends Component {
 
       case "articles":{
         
-        return <Articles  setPage={this.setPage}/>
+        return <Articles  
+        setPage={this.setPage} 
+        setLastItem={this.setLastItem} 
+        LastItem={this.state.LastItem} 
+       />
       }
 
       case "register":{
@@ -78,11 +85,19 @@ class App extends Component {
       }
 
       case "gotosearch":{
-        return <GotoSearch setPage={this.setPage} currentIndex={this.state.currentIndex} setCurrentIndex={this.setCurrentIndex} />
+        return <GotoSearch 
+        setPage={this.setPage} 
+        currentIndex={this.state.currentIndex} 
+        setCurrentIndex={this.setCurrentIndex} />
       }
 
       case "givedirection":{
-        return <GiveDirection currentIndex={this.state.currentIndex} setCurrentIndex={this.setCurrentIndex} />
+        return <GiveDirection 
+        setLastItem={this.setLastItem} 
+        LastItem={this.state.LastItem}
+        currentIndex={this.state.currentIndex} 
+        setCurrentIndex={this.setCurrentIndex} 
+        />
       }
 
       default:

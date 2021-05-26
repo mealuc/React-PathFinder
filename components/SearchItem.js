@@ -13,7 +13,7 @@ const transition = (
   </Transition.Together>
 )
 
-const SearchItem = ({setPage,setCurrentIndex,currentIndex}) => {
+const SearchItem = ({ setPage, setCurrentIndex, currentIndex }) => {
   const [filteredData, setfilteredData] = useState([]);
   const [search, setsearch] = useState('');
   const [items, setitems] = useState([]);
@@ -95,12 +95,12 @@ const SearchItem = ({setPage,setCurrentIndex,currentIndex}) => {
                     <Text>Store Description: {item.description}</Text>
                     <View>
                       <TouchableOpacity
-                      onPress={() => {
-                        setPage("givedirection")
-                      }}
-                      style={styles.directionButton}>
-                      <Text>Git</Text>
-                    </TouchableOpacity>
+                        onPress={() => {
+                          setPage("givedirection")
+                        }}
+                        style={styles.directionButton}>
+                        <Text>Git</Text>
+                      </TouchableOpacity>
                     </View>
                   </View>)}
               </View>
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 5,
     marginBottom: 3,
-    backgroundColor: 'red',
+    backgroundColor: '#ddd',
   }
 });
 
