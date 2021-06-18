@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, StatusBar, TouchableOpacity, TextInput } from 'react-native';
-import { SafeAreaView } from 'react-navigation';
+import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, TextInput } from 'react-native';
 import * as firebase from 'firebase';
 import { FlatList } from 'react-native-gesture-handler';
 import { Transition, Transitioning } from 'react-native-reanimated';
@@ -13,7 +12,7 @@ const transition = (
   </Transition.Together>
 )
 
-const SearchItem = ({ setPage, setCurrentIndex, currentIndex }) => {
+const SearchItem = ({ setPage, setCurrentIndex, currentIndex, }) => {
   const [filteredData, setfilteredData] = useState([]);
   const [search, setsearch] = useState('');
   const [items, setitems] = useState([]);
@@ -38,7 +37,6 @@ const SearchItem = ({ setPage, setCurrentIndex, currentIndex }) => {
       setsearch(text);
     }
   }
-
   const ItemSeperatorView = () => {
     return (
       <View
@@ -46,7 +44,6 @@ const SearchItem = ({ setPage, setCurrentIndex, currentIndex }) => {
       />
     )
   }
-
   const getItems = () => {
     firebase.database().ref('/coordinates')
       .orderByChild('description')
@@ -60,6 +57,9 @@ const SearchItem = ({ setPage, setCurrentIndex, currentIndex }) => {
         setitems(storeItems);
         setfilteredData(storeItems);
       });
+  }
+  const GetItemsByPrice = () =>{
+    
   }
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -75,6 +75,14 @@ const SearchItem = ({ setPage, setCurrentIndex, currentIndex }) => {
           underlineColorAndroid="transparent"
           onChangeText={(text) => searchFilter(text)}
         />
+        <View style={styles.filterButtons}>
+        <TouchableOpacity style={styles.filterText}>
+          <Text>Filter By Price</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.filterText}>
+          <Text>Filter By Distance</Text>
+        </TouchableOpacity>
+        </View>
         <FlatList
           data={filteredData}
           renderItem={({ item }) => (
@@ -89,10 +97,8 @@ const SearchItem = ({ setPage, setCurrentIndex, currentIndex }) => {
                 {item.key === currentIndex && (
                   <View style={styles.subCategoriesList}>
                     <Text>Store Owner: {item.owner_name}</Text>
-                    <Text>Store Owner Email: {item.owner_email}</Text>
-                    <Text>Store Latitude: {item.latitude}</Text>
-                    <Text>Store Longitude: {item.longitude}</Text>
                     <Text>Store Description: {item.description}</Text>
+                    <Text>Store Price: {item.price}₺</Text>
                     <View>
                       <TouchableOpacity
                         onPress={() => {
@@ -108,7 +114,20 @@ const SearchItem = ({ setPage, setCurrentIndex, currentIndex }) => {
           )}
           ItemSeparatorComponent={ItemSeperatorView}
         />
+        <View style={styles.BottomTab}>
+          <TouchableOpacity style={styles.BottomTabButton} onPress={() => firebase.auth().signOut()} >
+            <Text style={{ color: '#1B9CFC' }}>
+              Logout
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.BottomTabButton} onPress={() => setPage("articles")} >
+            <Text style={{ color: '#1B9CFC' }}>
+              Home
+            </Text>
+          </TouchableOpacity>
+        </View>
       </Transitioning.View>
+      
     </SafeAreaView>
   );
 };
@@ -155,7 +174,41 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginBottom: 3,
     backgroundColor: '#ddd',
-  }
+  },
+  filterButtons:{
+    backgroundColor:'gray',
+    borderRadius:6,
+    padding:3,
+    marginBottom:6,
+    flexDirection:'row',
+    justifyContent:'space-around',
+    width:'auto',
+  },
+  filterText:{
+    borderWidth:1,
+    borderRadius:4,
+    color:'black',
+    backgroundColor:'white',
+    width:'auto',
+  },
+  BottomTab: {
+    width: "100%",
+    justifyContent: 'space-around',
+    padding: 20,
+    height:60,
+    alignItems: 'flex-end',
+    backgroundColor: 'red',
+    flexDirection:'row',
+    marginTop:'auto',
+  },
+  BottomTabButton:{
+    justifyContent:'center',
+    alignItems:'center',
+    backgroundColor:'black',
+    borderRadius:10,
+    borderColor:'black',
+    padding:7,
+  },
 });
 
 export default SearchItem;

@@ -1,8 +1,8 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { Component, } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, PermissionsAndroid } from 'react-native';
 import * as firebase from 'firebase';
 import Geolocation from '@react-native-community/geolocation';
-import MapView, { PROVIDER_GOOGLE, Marker, AnimatedRegion } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE, Marker, } from 'react-native-maps';
 import Dialog from "react-native-dialog";
 class Articles extends Component {
   constructor(props) {
@@ -13,6 +13,7 @@ class Articles extends Component {
       description: "",
       title: "",
       visible: false,
+      price: "",
     }
   }
 
@@ -23,9 +24,9 @@ class Articles extends Component {
         'message': 'Give Permission!'
       });
     }
-    else{
+    else {
       Geolocation.requestAuthorization();
-    }    
+    }
     const useruid = firebase.auth().currentUser.uid;
     firebase.database().ref('users/' + useruid).once('value')
       .then(snapshot => {
@@ -42,20 +43,7 @@ class Articles extends Component {
       },
       { enableHighAccuracy: true }
     );
-  }
-  stop_observing = () => {
-    Geolocation.stopObserving();
-  };
-  getItems = () => {
-    firebase.database().ref('/coordinates')
-      .orderByChild('description')
-      .once('value', snapshot => {
-        snapshot.forEach((child) => {
-          console.log(child.val());
-        })
-      });
-  }
-  find_myposition = () => {
+
     Geolocation.getCurrentPosition(
       (position) => {
         let { coords: { latitude, longitude } } = position;
@@ -67,7 +55,9 @@ class Articles extends Component {
       { enableHighAccuracy: true }
     );
   }
-  
+  stop_observing = () => {
+    Geolocation.stopObserving();
+  };
   handleCancel = () => {
     this.setState({
       visible: false
@@ -94,6 +84,7 @@ class Articles extends Component {
       owner_name: this.state.name,
       latitude: this.state.latitude,
       longitude: this.state.longitude,
+      price:this.state.price,
       userid: firebase.auth().currentUser.uid
     }).then(this.closeDialog)
       .catch((error) => console.log(error));
@@ -101,25 +92,18 @@ class Articles extends Component {
 
   render() {
     const { email, name } = this.state;
-    const {latitude,longitude} = this.props.LastItem;
+    const { latitude, longitude } = this.props.LastItem;
     return (
       <View style={styles.container}>
-
         <Dialog.Container visible={this.state.visible}>
           <Dialog.Title>Konumuna Açıklama Ekle</Dialog.Title>
           <Dialog.Input placeholder="Başlık" onChangeText={title => this.setState({ title })}></Dialog.Input>
           <Dialog.Input placeholder="Açıklama" onChangeText={description => this.setState({ description })}></Dialog.Input>
+          <Dialog.Input placeholder="Fiyat" onChangeText={price => this.setState({ price })}></Dialog.Input>
           <Dialog.Button label="Cancel" onPress={this.handleCancel} />
           <Dialog.Button label="Ekle" onPress={this.save_coords} />
         </Dialog.Container>
-        <Text>
-          latitude:{latitude}
-        </Text>
-        <Text>
-          longitude:{longitude}
-        </Text>
-        <View style={styles.articleContainer}>
-          <View style={styles.mapcontainer}>
+        <View style={styles.mapcontainer}>
             <MapView
               showsMyLocationButton={true}
               provider={PROVIDER_GOOGLE}///////// remove if not using Google Maps
@@ -132,46 +116,36 @@ class Articles extends Component {
               }}
               followsUserLocation={true}
               showsUserLocation={true}
-            >
-              <Marker
-                draggable={true}
-                onDragEnd={(e) =>
-                  this.setState({ latitude: e.nativeEvent.coordinate.latitude, longitude: e.nativeEvent.coordinate.longitude })}
-                title={"Here"}
-                description={"MyHome"}
-                coordinate={{
-                  latitude: latitude,
-                  longitude: longitude,
-                  latitudeDelta: 0.015,
-                  longitudeDelta: 0.0121,
-                }} />
+            > 
+            
             </MapView>
           </View>
+        <Text>
+          latitude:{latitude}
+        </Text>
+        <Text>
+          longitude:{longitude}
+        </Text>
+        <View style={styles.articleContainer}>         
           <Text style={styles.content}>
-            Hi {email}/{name}
-          </Text>
-          <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={this.getItems}>
-            <Text style={{ color: '#1B9CFC' }}>Snapshot</Text>
+            Hi {name}
+          </Text>        
+        </View>         
+        <View style={styles.BottomTab}>
+        <TouchableOpacity style={styles.BottomTabButton} onPress={this.showDialog}>
+            <Text style={{ color: '#1B9CFC' }}>Add Location</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={() => this.props.setPage("getitem")}>
-            <Text style={{ color: '#1B9CFC' }}>GetItem</Text>
+          <TouchableOpacity style={styles.BottomTabButton} onPress={() => firebase.auth().signOut()} >
+            <Text style={{ color: '#1B9CFC' }}>Logout</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={() => this.props.setPage("gotosearch")}>
-            <Text style={{ color: '#1B9CFC' }}>GotoSearch</Text>
+          <TouchableOpacity style={styles.BottomTabButton} onPress={() => this.props.setPage("gotosearch")}>
+            <Text style={{ color: '#1B9CFC' }}>Search</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={() => this.props.setPage("givedirection")}>
-            <Text style={{ color: '#1B9CFC' }}>YolTarifi</Text>
+          <TouchableOpacity style={styles.BottomTabButton} onPress={() => this.props.setPage("givedirection")}>
+            <Text style={{ color: '#1B9CFC' }}>Route</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={this.showDialog}>
-            <Text style={{ color: '#1B9CFC' }}>Konumu Kaydet</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={{ padding: 20, width: 150 }} onPress={this.find_myposition}>
-            <Text style={{ color: '#1B9CFC' }}>Konumumu Bul</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={{ padding: 20, width: 85 }} onPress={() => firebase.auth().signOut()} >
-            <Text style={{ color: '#1B9CFC' }}>
-              Logout
-            </Text>
+          <TouchableOpacity style={styles.BottomTabButton} onPress={() => this.props.setPage("navigation")}>
+            <Text style={{ color: '#1B9CFC' }}>Navigation</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -182,6 +156,7 @@ class Articles extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'gray',
   },
   articleContainer: {
     padding: 10,
@@ -195,37 +170,60 @@ const styles = StyleSheet.create({
   mapcontainer: {
     flex: 1,
     ...StyleSheet.absoluteFillObject,
-    height: 400,
-    width: 400,
-
+    height: "100%",
+    width: "100%",
   },
   map: {
     flex: 1,
     ...StyleSheet.absoluteFillObject,
   },
+  BottomTab: {
+    width: "100%",
+    justifyContent: 'space-around',
+    padding:20,
+    height:60,
+    alignItems: 'flex-end',
+    backgroundColor: 'red',
+    flexDirection:'row',
+    marginTop:'auto',
+  },
+  BottomTabButton:{
+    justifyContent:'center',
+    alignItems:'center',
+    backgroundColor:'black',
+    borderRadius:10,
+    borderColor:'black',
+    padding:7,
+  },
 });
 
 export default Articles;
 
-//Number(41.2351403),
-//Number(32.6669429),
-/*<Marker
-draggable={true}
-onDragEnd={(e) =>
-  this.setState({ latitude: e.nativeEvent.coordinate.latitude, longitude: e.nativeEvent.coordinate.longitude })}
-title={"Here"}
-description={"MyHome"}
-coordinate={{
-  latitude: Number(this.state.latitude),
-  longitude: Number(this.state.longitude),
-  latitudeDelta: 0.015,
-  longitudeDelta: 0.0121,
-}} />
-///////////////////
+/*
+
+*/
+/*
 getItems = () => {
     firebase.database().ref('/coordinates')
+      .orderByChild('description')
       .once('value', snapshot => {
-        console.log(snapshot.val());
+        snapshot.forEach((child) => {
+          console.log(child.val());
+        })
       });
   }
 */
+/*
+<Marker
+                draggable={true}
+                onDragEnd={(e) =>
+                  this.setState({ latitude: e.nativeEvent.coordinate.latitude, longitude: e.nativeEvent.coordinate.longitude })}
+                title={"Here"}
+                description={"MyHome"}
+                coordinate={{
+                  latitude: latitude,
+                  longitude: longitude,
+                  latitudeDelta: 0.015,
+                  longitudeDelta: 0.0121,
+                }} />
+                */

@@ -5,9 +5,9 @@ import Articles from './Articles';
 import firebase from 'firebase';
 import Loading from './Loading';
 import Register from './Register';
-import GetItem from './GetItem';
 import GotoSearch from './SearchItem';
 import GiveDirection from './GiveDirection';
+import Navigation from './Navigation';
 class App extends Component {
 
   constructor(props){
@@ -67,21 +67,15 @@ class App extends Component {
       }
 
       case "articles":{
-        
+       
         return <Articles  
         setPage={this.setPage} 
         setLastItem={this.setLastItem} 
         LastItem={this.state.LastItem} 
        />
       }
-
       case "register":{
-
         return <Register setPage={this.setPage}/>
-      }
-
-      case "getitem":{
-        return <GetItem />
       }
 
       case "gotosearch":{
@@ -90,21 +84,27 @@ class App extends Component {
         currentIndex={this.state.currentIndex} 
         setCurrentIndex={this.setCurrentIndex} />
       }
-
+      case "navigation":{
+        return <Navigation 
+        setPage={this.setPage}
+        />
+      }
       case "givedirection":{
         return <GiveDirection 
+        setPage={this.setPage} 
         setLastItem={this.setLastItem} 
         LastItem={this.state.LastItem}
         currentIndex={this.state.currentIndex} 
         setCurrentIndex={this.setCurrentIndex} 
         />
       }
-
       default:
         return <Loading />
     }
   }
 
+
+  
   render() {
     return (
       <View style={styles.container}>
@@ -113,7 +113,6 @@ class App extends Component {
     );
   }
 }
-
 
 
 const styles = StyleSheet.create({
