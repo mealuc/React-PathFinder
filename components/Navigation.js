@@ -1,9 +1,16 @@
 import React from 'react';
-import { Text, View,Button } from 'react-native';
+import { Text, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
+import Articles from './Articles';
 class HomeScreen extends React.Component {
-    
+    /*constructor(props) {
+        super(props);
+    }
+    componentDidMount=() => {
+        this.props.setPage("articles");
+    }
+    */
     render() {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -13,11 +20,34 @@ class HomeScreen extends React.Component {
     }
 }
 
-class SettingsScreen extends React.Component {
+class SearchScreen extends React.Component {
+
     render() {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text>Settings!</Text>              
+                <Text>Search!</Text>              
+            </View>
+        );
+    }
+}
+
+class LogoutScreen extends React.Component {
+    
+    render() {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text>Logout!</Text>              
+            </View>
+        );
+    }
+}
+
+class RouteScreen extends React.Component {
+    
+    render() {
+        return (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text>Route!</Text>              
             </View>
         );
     }
@@ -28,13 +58,12 @@ const Tabs = () => {
     return (
         <NavigationContainer>
             <Tab.Navigator>
-                <Tab.Screen name="Main" component={HomeScreen}  />
-                <Tab.Screen name="Settings" component={SettingsScreen} />
+                <Tab.Screen name="Main" component={HomeScreen} />
+                <Tab.Screen name="Search" component={Articles} />
+                <Tab.Screen name="Logout" component={LogoutScreen} />
+                <Tab.Screen name="Route" component={RouteScreen} />
             </Tab.Navigator>
-        </NavigationContainer>
-        
-
+        </NavigationContainer>     
     )
 }
-
 export default Tabs;

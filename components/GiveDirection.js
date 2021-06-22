@@ -1,7 +1,6 @@
-import React, { Component, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, PermissionsAndroid, SafeAreaView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, LogBox } from 'react-native';
 import * as firebase from 'firebase';
-import Geolocation from '@react-native-community/geolocation';
 import MapView, { PROVIDER_GOOGLE, Marker, } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 
@@ -13,10 +12,11 @@ const getItems = (currentIndex, setter) => {
         });
 }
 
-const GiveDirection = ({ currentIndex, LastItem: { latitude: userLatitude, longitude: userLongitude },setPage }) => {
-    const [targetCoordinate, setTargetCoordinate] = useState({ longitude: 41.2351403, latitude: 32.6669429 });
+const GiveDirection = ({ currentIndex, LastItem: { latitude: userLatitude, longitude: userLongitude }, setPage }) => {
+    const [targetCoordinate, setTargetCoordinate] = useState({ longitude: userLatitude, latitude: userLongitude });
     useEffect(() => {
         getItems(currentIndex, setTargetCoordinate);
+        LogBox.ignoreLogs(['MapViewDirections Error: Error on GMAPS route request: ZERO_RESULTS']);
     }, [currentIndex, setTargetCoordinate])
     return (
         <View style={styles.mapcontainer}>
@@ -25,8 +25,8 @@ const GiveDirection = ({ currentIndex, LastItem: { latitude: userLatitude, longi
                 provider={PROVIDER_GOOGLE}//remove if not using Google Maps
                 style={styles.map}
                 region={{
-                    latitude: 41.2351403,
-                    longitude: 32.6669429,
+                    latitude: userLatitude,
+                    longitude: userLongitude,
                     latitudeDelta: 0.015,
                     longitudeDelta: 0.0121,
                 }}
@@ -57,10 +57,11 @@ const GiveDirection = ({ currentIndex, LastItem: { latitude: userLatitude, longi
             </MapView>
             <View style={styles.BottomTab}>
                 <TouchableOpacity style={styles.BottomTabButton} onPress={() => setPage("gotosearch")}>
-            <Text style={{ color: '#1B9CFC' }}>Search</Text>
-          </TouchableOpacity>
+                    <Image style={styles.buttonImage} source={require('../images/search.webp')} />
+                </TouchableOpacity>
                 <TouchableOpacity style={styles.BottomTabButton} onPress={() => setPage("articles")} >
-                    <Text style={{ color: '#1B9CFC' }}>Home</Text></TouchableOpacity>
+                    <Image style={styles.buttonImage} source={require('../images/home.png')} />
+                </TouchableOpacity>
             </View>
         </View>
     );
@@ -82,20 +83,25 @@ const styles = StyleSheet.create({
         width: "100%",
         justifyContent: 'space-around',
         padding: 20,
-        height:60,
+        height: 60,
         alignItems: 'flex-end',
-        backgroundColor: 'red',
-        flexDirection:'row',
-        marginTop:'auto',
-      },
-      BottomTabButton:{
-        justifyContent:'center',
-        alignItems:'center',
-        backgroundColor:'black',
-        borderRadius:10,
-        borderColor:'black',
-        padding:7,
-      },
+        backgroundColor: 'gray',
+        flexDirection: 'row',
+        marginTop: 'auto',
+    },
+    BottomTabButton: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10,
+        borderWidth: 2,
+        borderLeftWidth: 5,
+        height: 40,
+        padding: 3,
+    },
+    buttonImage: {
+        width: 35,
+        height: 36,
+    }
 })
 //AIzaSyCbar4Awt3fCuYdoDpa8zxrjUyeTQjQDkU
 export default GiveDirection;

@@ -1,9 +1,10 @@
 import React, { Component, } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, PermissionsAndroid } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, PermissionsAndroid, Image, TouchableHighlight } from 'react-native';
 import * as firebase from 'firebase';
 import Geolocation from '@react-native-community/geolocation';
-import MapView, { PROVIDER_GOOGLE, Marker, } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
 import Dialog from "react-native-dialog";
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 class Articles extends Component {
   constructor(props) {
     super(props);
@@ -43,7 +44,6 @@ class Articles extends Component {
       },
       { enableHighAccuracy: true }
     );
-
     Geolocation.getCurrentPosition(
       (position) => {
         let { coords: { latitude, longitude } } = position;
@@ -84,7 +84,7 @@ class Articles extends Component {
       owner_name: this.state.name,
       latitude: this.state.latitude,
       longitude: this.state.longitude,
-      price:this.state.price,
+      price: this.state.price,
       userid: firebase.auth().currentUser.uid
     }).then(this.closeDialog)
       .catch((error) => console.log(error));
@@ -93,6 +93,7 @@ class Articles extends Component {
   render() {
     const { email, name } = this.state;
     const { latitude, longitude } = this.props.LastItem;
+    const Tab = createBottomTabNavigator();
     return (
       <View style={styles.container}>
         <Dialog.Container visible={this.state.visible}>
@@ -104,48 +105,45 @@ class Articles extends Component {
           <Dialog.Button label="Ekle" onPress={this.save_coords} />
         </Dialog.Container>
         <View style={styles.mapcontainer}>
-            <MapView
-              showsMyLocationButton={true}
-              provider={PROVIDER_GOOGLE}///////// remove if not using Google Maps
-              style={styles.map}
-              region={{
+          <MapView
+            showsMyLocationButton={true}
+            provider={PROVIDER_GOOGLE}
+            style={styles.map}
+            region={{
+              latitude: latitude,
+              longitude: longitude,
+              latitudeDelta: 0.015,
+              longitudeDelta: 0.0121,
+            }}
+            followsUserLocation={true}
+            showsUserLocation={true}
+          >
+            <Marker
+              draggable={true}
+              onDragEnd={(e) =>
+                this.setState({ latitude: e.nativeEvent.coordinate.latitude, longitude: e.nativeEvent.coordinate.longitude })}
+              title={"Here"}
+              description={"MyHome"}
+              coordinate={{
                 latitude: latitude,
                 longitude: longitude,
                 latitudeDelta: 0.015,
                 longitudeDelta: 0.0121,
-              }}
-              followsUserLocation={true}
-              showsUserLocation={true}
-            > 
-            
-            </MapView>
-          </View>
-        <Text>
-          latitude:{latitude}
-        </Text>
-        <Text>
-          longitude:{longitude}
-        </Text>
-        <View style={styles.articleContainer}>         
-          <Text style={styles.content}>
-            Hi {name}
-          </Text>        
-        </View>         
+              }} />
+          </MapView>
+        </View>
         <View style={styles.BottomTab}>
-        <TouchableOpacity style={styles.BottomTabButton} onPress={this.showDialog}>
-            <Text style={{ color: '#1B9CFC' }}>Add Location</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.BottomTabButton} onPress={() => firebase.auth().signOut()} >
-            <Text style={{ color: '#1B9CFC' }}>Logout</Text>
+          <TouchableOpacity style={styles.BottomTabButton} onPress={this.showDialog}>
+            <Image style={styles.buttonImage} source={require('../images/addlocation.png')} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.BottomTabButton} onPress={() => this.props.setPage("gotosearch")}>
-            <Text style={{ color: '#1B9CFC' }}>Search</Text>
+            <Image style={styles.buttonImage} source={require('../images/search.webp')} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.BottomTabButton} onPress={() => this.props.setPage("givedirection")}>
-            <Text style={{ color: '#1B9CFC' }}>Route</Text>
+            <Image style={styles.buttonImage} source={require('../images/route.png')} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.BottomTabButton} onPress={() => this.props.setPage("navigation")}>
-            <Text style={{ color: '#1B9CFC' }}>Navigation</Text>
+          <TouchableOpacity style={styles.BottomTabButton} onPress={() => firebase.auth().signOut()} >
+            <Image style={styles.buttonImage} source={require('../images/logout1.png')} />
           </TouchableOpacity>
         </View>
       </View>
@@ -180,21 +178,26 @@ const styles = StyleSheet.create({
   BottomTab: {
     width: "100%",
     justifyContent: 'space-around',
-    padding:20,
-    height:60,
+    padding: 10,
+    height: 50,
     alignItems: 'flex-end',
-    backgroundColor: 'red',
-    flexDirection:'row',
-    marginTop:'auto',
+    backgroundColor: 'gray',
+    flexDirection: 'row',
+    marginTop: 'auto',
   },
-  BottomTabButton:{
-    justifyContent:'center',
-    alignItems:'center',
-    backgroundColor:'black',
-    borderRadius:10,
-    borderColor:'black',
-    padding:7,
+  BottomTabButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    borderWidth: 2,
+    borderLeftWidth: 5,
+    height: 40,
+    padding: 3,
   },
+  buttonImage: {
+    width: 35,
+    height: 36,
+  }
 });
 
 export default Articles;

@@ -1,5 +1,5 @@
-import React, { Component, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import React, { Component } from 'react';
+import { View, StyleSheet } from 'react-native';
 import Login from './Login';
 import Articles from './Articles';
 import firebase from 'firebase';
@@ -10,25 +10,25 @@ import GiveDirection from './GiveDirection';
 import Navigation from './Navigation';
 class App extends Component {
 
-  constructor(props){
+  constructor(props) {
     super(props);
     this.setPage = this.setPage.bind(this);
     this.setCurrentIndex = this.setCurrentIndex.bind(this);
     this.setLastItem = this.setLastItem.bind(this);
-    this.state = { currentIndex: null, page: null, LastItem: {latitude : 0 , longitude : 0} }; 
+    this.state = { currentIndex: null, page: null, LastItem: { latitude: 0, longitude: 0 } };
   }
-  
-  state={
-    page:"login"
+
+  state = {
+    page: "login"
   }
   setPage(newpage) {
-    this.setState({page: newpage});
+    this.setState({ page: newpage });
   }
-  setCurrentIndex(id){
-    this.setState({currentIndex: id});
+  setCurrentIndex(id) {
+    this.setState({ currentIndex: id });
   }
-  setLastItem(Item){
-    this.setState({LastItem:Item})
+  setLastItem(Item) {
+    this.setState({ LastItem: Item })
   }
   componentDidMount() {
     var firebaseConfig = {
@@ -61,50 +61,50 @@ class App extends Component {
 
   renderContent = () => {
     switch (this.state.page) {
-      case "login":{
+      case "login": {
 
-        return <Login setPage={this.setPage}/>
-      }
-
-      case "articles":{
-       
-        return <Articles  
-        setPage={this.setPage} 
-        setLastItem={this.setLastItem} 
-        LastItem={this.state.LastItem} 
-       />
-      }
-      case "register":{
-        return <Register setPage={this.setPage}/>
+        return <Login setPage={this.setPage} />
       }
 
-      case "gotosearch":{
-        return <GotoSearch 
-        setPage={this.setPage} 
-        currentIndex={this.state.currentIndex} 
-        setCurrentIndex={this.setCurrentIndex} />
-      }
-      case "navigation":{
-        return <Navigation 
-        setPage={this.setPage}
+      case "articles": {
+
+        return <Articles
+          setPage={this.setPage}
+          setLastItem={this.setLastItem}
+          LastItem={this.state.LastItem}
         />
       }
-      case "givedirection":{
-        return <GiveDirection 
-        setPage={this.setPage} 
-        setLastItem={this.setLastItem} 
-        LastItem={this.state.LastItem}
-        currentIndex={this.state.currentIndex} 
-        setCurrentIndex={this.setCurrentIndex} 
+      case "register": {
+        return <Register setPage={this.setPage} />
+      }
+      case "gotosearch": {
+        return <GotoSearch
+          setPage={this.setPage}
+          currentIndex={this.state.currentIndex}
+          setCurrentIndex={this.setCurrentIndex}
+          LastItem={this.state.LastItem}
+        />
+      }
+      case "navigation": {
+        return <Navigation
+          setPage={this.setPage}
+          setLastItem={this.setLastItem}
+          LastItem={this.state.LastItem}
+        />
+      }
+      case "givedirection": {
+        return <GiveDirection
+          setPage={this.setPage}
+          setLastItem={this.setLastItem}
+          LastItem={this.state.LastItem}
+          currentIndex={this.state.currentIndex}
+          setCurrentIndex={this.setCurrentIndex}
         />
       }
       default:
         return <Loading />
     }
   }
-
-
-  
   render() {
     return (
       <View style={styles.container}>
