@@ -30,7 +30,7 @@ const SearchItem = ({ setPage, setCurrentIndex, currentIndex, LastItem }) => {
   const searchFilter = (text) => {
     if (text) {
       const newData = items.filter((item) => {
-        const itemData = item.title ? item.title.toUpperCase() : ''.toUpperCase();
+        const itemData = item.item_name ? item.item_name.toUpperCase() : ''.toUpperCase();
         const textData = text.toUpperCase();
         return itemData.indexOf(textData) > -1;
       });
@@ -70,7 +70,7 @@ const SearchItem = ({ setPage, setCurrentIndex, currentIndex, LastItem }) => {
     )
   }
   const getItems = () => {
-    firebase.database().ref('/coordinates')
+    firebase.database().ref('/items')
       .orderByChild('price')
       .once('value', snapshot => {
         var storeItems = [];
@@ -92,7 +92,6 @@ const SearchItem = ({ setPage, setCurrentIndex, currentIndex, LastItem }) => {
   };
   return (
     <SafeAreaView style={{ flex: 1 }}>
-
       <Transitioning.View
         style={styles.container}
         transition={transition}
@@ -125,11 +124,13 @@ const SearchItem = ({ setPage, setCurrentIndex, currentIndex, LastItem }) => {
                   setCurrentIndex(item.key === currentIndex ? null : item.key);
                 }}>
                 <View style={styles.card}>
-                  <Text style={styles.heading}>{item.title}</Text>
+                  <Text style={styles.heading}>{item.item_name}</Text>
                   {item.key === currentIndex && (
                     <View style={styles.subCategoriesList}>
-                      <Text>Store Description: {item.description}</Text>
+                      <Text>Store Name: {item.mgz_name}</Text>
+                      <Text>Store Description: {item.item_desc}</Text>
                       <Text>Store Price: {item.price}₺</Text>
+                      <Text>Store Stock: {item.stock}</Text>                
                       <Text>Store Distance: {DistanceCal(item.latitude, item.longitude)}m</Text>
                       <View>
                         <TouchableOpacity
@@ -153,7 +154,6 @@ const SearchItem = ({ setPage, setCurrentIndex, currentIndex, LastItem }) => {
           </TouchableOpacity>
         </View>
       </Transitioning.View>
-
     </SafeAreaView>
   );
 };

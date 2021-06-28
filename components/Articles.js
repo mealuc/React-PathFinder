@@ -1,10 +1,9 @@
 import React, { Component, } from 'react';
-import { View, StyleSheet, TouchableOpacity, PermissionsAndroid, Image, TouchableHighlight } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, PermissionsAndroid, Image } from 'react-native';
 import * as firebase from 'firebase';
 import Geolocation from '@react-native-community/geolocation';
 import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
-import Dialog from "react-native-dialog";
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
 class Articles extends Component {
   constructor(props) {
     super(props);
@@ -28,6 +27,7 @@ class Articles extends Component {
     else {
       Geolocation.requestAuthorization();
     }
+
     const useruid = firebase.auth().currentUser.uid;
     firebase.database().ref('users/' + useruid).once('value')
       .then(snapshot => {
@@ -55,55 +55,14 @@ class Articles extends Component {
       { enableHighAccuracy: true }
     );
   }
-  stop_observing = () => {
-    Geolocation.stopObserving();
-  };
-  handleCancel = () => {
-    this.setState({
-      visible: false
-    })
-  };
-  showDialog = () => {
-    this.setState({
-      visible: true
-    })
-  }
-  closeDialog = () => {
-    this.setState({
-      visible: false
-    }, () => {
-      alert('Konumu Eklendi!');
-    });
-  }
-  save_coords = () => {
-    var database = firebase.database().ref('coordinates/');
-    database.push({
-      title: this.state.title,
-      description: this.state.description,
-      owner_email: this.state.email,
-      owner_name: this.state.name,
-      latitude: this.state.latitude,
-      longitude: this.state.longitude,
-      price: this.state.price,
-      userid: firebase.auth().currentUser.uid
-    }).then(this.closeDialog)
-      .catch((error) => console.log(error));
-  }
+
 
   render() {
     const { email, name } = this.state;
     const { latitude, longitude } = this.props.LastItem;
-    const Tab = createBottomTabNavigator();
     return (
       <View style={styles.container}>
-        <Dialog.Container visible={this.state.visible}>
-          <Dialog.Title>Konumuna Açıklama Ekle</Dialog.Title>
-          <Dialog.Input placeholder="Başlık" onChangeText={title => this.setState({ title })}></Dialog.Input>
-          <Dialog.Input placeholder="Açıklama" onChangeText={description => this.setState({ description })}></Dialog.Input>
-          <Dialog.Input placeholder="Fiyat" onChangeText={price => this.setState({ price })}></Dialog.Input>
-          <Dialog.Button label="Cancel" onPress={this.handleCancel} />
-          <Dialog.Button label="Ekle" onPress={this.save_coords} />
-        </Dialog.Container>
+ 
         <View style={styles.mapcontainer}>
           <MapView
             showsMyLocationButton={true}
@@ -118,24 +77,9 @@ class Articles extends Component {
             followsUserLocation={true}
             showsUserLocation={true}
           >
-            <Marker
-              draggable={true}
-              onDragEnd={(e) =>
-                this.setState({ latitude: e.nativeEvent.coordinate.latitude, longitude: e.nativeEvent.coordinate.longitude })}
-              title={"Here"}
-              description={"MyHome"}
-              coordinate={{
-                latitude: latitude,
-                longitude: longitude,
-                latitudeDelta: 0.015,
-                longitudeDelta: 0.0121,
-              }} />
           </MapView>
         </View>
         <View style={styles.BottomTab}>
-          <TouchableOpacity style={styles.BottomTabButton} onPress={this.showDialog}>
-            <Image style={styles.buttonImage} source={require('../images/addlocation.png')} />
-          </TouchableOpacity>
           <TouchableOpacity style={styles.BottomTabButton} onPress={() => this.props.setPage("gotosearch")}>
             <Image style={styles.buttonImage} source={require('../images/search.webp')} />
           </TouchableOpacity>
@@ -203,7 +147,62 @@ const styles = StyleSheet.create({
 export default Articles;
 
 /*
-
+  stop_observing = () => {
+    Geolocation.stopObserving();
+  };
+  handleCancel = () => {
+    this.setState({
+      visible: false
+    })
+  };
+  showDialog = () => {
+    this.setState({
+      visible: true
+    })
+  }
+  closeDialog = () => {
+    this.setState({
+      visible: false
+    }, () => {
+      alert('Konumu Eklendi!');
+    });
+  }
+*/
+/*  save_coords = () => {
+    var database = firebase.database().ref('coordinates/');
+    database.push({
+      title: this.state.title,
+      description: this.state.description,
+      owner_email: this.state.email,
+      owner_name: this.state.name,
+      latitude: this.state.latitude,
+      longitude: this.state.longitude,
+      price: this.state.price,
+      userid: firebase.auth().currentUser.uid
+    }).then(this.closeDialog)
+      .catch((error) => console.log(error));
+  } */
+/*       <Dialog.Container visible={this.state.visible}>
+          <Dialog.Title>Konumuna Açıklama Ekle</Dialog.Title>
+          <Dialog.Input placeholder="Başlık" onChangeText={title => this.setState({ title })}></Dialog.Input>
+          <Dialog.Input placeholder="Açıklama" onChangeText={description => this.setState({ description })}></Dialog.Input>
+          <Dialog.Input placeholder="Fiyat" onChangeText={price => this.setState({ price })}></Dialog.Input>
+          <Dialog.Button label="Cancel" onPress={this.handleCancel} />
+          <Dialog.Button label="Ekle" onPress={this.save_coords} />
+        </Dialog.Container> */
+/*
+<Marker
+              draggable={true}
+              onDragEnd={(e) =>
+                this.setState({ latitude: e.nativeEvent.coordinate.latitude, longitude: e.nativeEvent.coordinate.longitude })}
+              title={"Here"}
+              description={"MyHome"}
+              coordinate={{
+                latitude: latitude,
+                longitude: longitude,
+                latitudeDelta: 0.015,
+                longitudeDelta: 0.0121,
+              }} />
 */
 /*
 getItems = () => {

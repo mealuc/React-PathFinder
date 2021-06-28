@@ -5,13 +5,11 @@ import MapView, { PROVIDER_GOOGLE, Marker, } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 
 const getItems = (currentIndex, setter) => {
-    firebase.database().ref(`/coordinates/${currentIndex}`)
-        .orderByChild('description')
+    firebase.database().ref(`/items/${currentIndex}`)
+        .orderByChild('item_name')
         .once('value', snapshot => {
             setter(snapshot.val());
-        });
-}
-
+        });}
 const GiveDirection = ({ currentIndex, LastItem: { latitude: userLatitude, longitude: userLongitude }, setPage }) => {
     const [targetCoordinate, setTargetCoordinate] = useState({ longitude: userLatitude, latitude: userLongitude });
     useEffect(() => {
@@ -37,8 +35,8 @@ const GiveDirection = ({ currentIndex, LastItem: { latitude: userLatitude, longi
                     title={"Destination"}
                     description={"Destination"}
                     coordinate={{
-                        latitude: targetCoordinate.latitude,
-                        longitude: targetCoordinate.longitude,
+                        latitude: Number(targetCoordinate.latitude),
+                        longitude: Number(targetCoordinate.longitude),
                         latitudeDelta: 0.015,
                         longitudeDelta: 0.0121,
                     }} />
@@ -46,8 +44,8 @@ const GiveDirection = ({ currentIndex, LastItem: { latitude: userLatitude, longi
                     apikey={"AIzaSyCbar4Awt3fCuYdoDpa8zxrjUyeTQjQDkU"}
                     origin={{ latitude: userLatitude, longitude: userLongitude }}
                     destination={{
-                        latitude: targetCoordinate.latitude,
-                        longitude: targetCoordinate.longitude,
+                        latitude: Number(targetCoordinate.latitude),
+                        longitude: Number(targetCoordinate.longitude),
                         latitudeDelta: 0.015,
                         longitudeDelta: 0.0121
                     }}
